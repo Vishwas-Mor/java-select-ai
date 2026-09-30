@@ -142,8 +142,10 @@ public abstract class IntegrationTestFixture {
                     """);
             statement.executeUpdate("""
                     CREATE TABLE ADMIN.director (
-                        director_id INT PRIMARY KEY,
-                        name VARCHAR(10)
+                        name VARCHAR2(100),
+                        age NUMBER,
+                        years_experience NUMBER,
+                        specialty VARCHAR2(50)
                     )
                     """);
             statement.executeUpdate("""
@@ -152,14 +154,15 @@ public abstract class IntegrationTestFixture {
                         title VARCHAR(100),
                         release_date DATE,
                         genre VARCHAR(50),
-                        director_id INT,
-                        FOREIGN KEY (director_id) REFERENCES ADMIN.director (director_id)
+                        director_id INT
                     )
                     """);
             statement.executeUpdate("""
                     CREATE TABLE ADMIN.actor (
-                        actor_id INT PRIMARY KEY,
-                        name VARCHAR(100)
+                        name VARCHAR2(100),
+                        age NUMBER,
+                        height NUMBER,
+                        hometown VARCHAR2(100)
                     )
                     """);
         }
@@ -185,6 +188,23 @@ public abstract class IntegrationTestFixture {
             addGymnastRow(gymnastInsert, 4, 8.5, 8.0, 8.7, 8.3, 33.5);
             addGymnastRow(gymnastInsert, 5, 9.2, 8.5, 8.9, 9.1, 35.7);
             gymnastInsert.executeBatch();
+        }
+
+        try (PreparedStatement directorInsert = connection.prepareStatement(
+                "INSERT INTO ADMIN.director (name, age, years_experience, specialty) "
+                        + "VALUES (?, ?, ?, ?)")) {
+            addDirectorRow(directorInsert, "Maya Chen", 43, 18, "Drama");
+            addDirectorRow(directorInsert, "Daniel Ruiz", 51, 24, "Documentary");
+            addDirectorRow(directorInsert, "Priya Nair", 38, 12, "Comedy");
+            directorInsert.executeBatch();
+        }
+
+        try (PreparedStatement actorInsert = connection.prepareStatement(
+                "INSERT INTO ADMIN.actor (name, age, height, hometown) VALUES (?, ?, ?, ?)")) {
+            addActorRow(actorInsert, "Jordan Lee", 31, 178, "Seattle");
+            addActorRow(actorInsert, "Avery Patel", 27, 165, "Austin");
+            addActorRow(actorInsert, "Morgan Davis", 36, 172, "Boston");
+            actorInsert.executeBatch();
         }
 
     }
@@ -311,6 +331,24 @@ public abstract class IntegrationTestFixture {
         statement.setDouble(4, parallelBarsPoints);
         statement.setDouble(5, horizontalBarPoints);
         statement.setDouble(6, totalPoints);
+        statement.addBatch();
+    }
+
+    private static void addDirectorRow(PreparedStatement statement, String name, int age,
+                                       int yearsExperience, String specialty) throws SQLException {
+        statement.setString(1, name);
+        statement.setInt(2, age);
+        statement.setInt(3, yearsExperience);
+        statement.setString(4, specialty);
+        statement.addBatch();
+    }
+
+    private static void addActorRow(PreparedStatement statement, String name, int age,
+                                    int height, String hometown) throws SQLException {
+        statement.setString(1, name);
+        statement.setInt(2, age);
+        statement.setInt(3, height);
+        statement.setString(4, hometown);
         statement.addBatch();
     }
 

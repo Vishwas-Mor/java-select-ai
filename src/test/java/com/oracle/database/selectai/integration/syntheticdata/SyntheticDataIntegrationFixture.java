@@ -33,7 +33,7 @@ abstract class SyntheticDataIntegrationFixture extends IntegrationTestFixture {
         closeIsolatedConnection();
     }
 
-    protected static final String SINGLE_OBJECT_NAME = "people";
+    protected static final String SINGLE_OBJECT_NAME = "director";
     protected static final String BATCH_OBJECT_OWNER = "ADMIN";
-    protected static final String[] BATCH_OBJECT_NAMES = {"people", "gymnast"};
+    protected static final String[] BATCH_OBJECT_NAMES = {"director", "actor"};
 }
